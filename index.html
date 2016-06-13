@@ -7,10 +7,6 @@
         font-family: "scratch";
         src: url("fonts/scratch.woff") format('woff');
       }
-      @font-face {
-        font-family: "edge";
-        src: url("fonts/Edge.ttf") format('ttf');
-      }
       body{
         background: #e01b1b;
       }
@@ -32,7 +28,23 @@
         position: fixed;
         height: 70%;
         width:70%;
-
+      }
+      #help {
+        position: fixed;
+        bottom:2%;
+        word-wrap: break-all;
+        text-transform: capitalize;
+        font-weight: normal;
+        font-size:24px;
+      }
+      #count{
+        position: fixed;
+        right: 5%;
+        bottom:5%;
+        word-wrap: break-all;
+        text-transform: capitalize;
+        font-weight: normal;
+        font-size:24px;
       }
     </style>
 
@@ -40,6 +52,14 @@
   <body>
     <div id="head"><img src=""/></div>
     <div id="text"></div>
+    <div id="help"></div>
+    <audio id="song-1" loop>
+      <source src="assets/paradise.mp3">
+    </audio>
+    <audio id="song-2" loop>
+      <source src="assets/paradise.mp3">
+    </audio>
+    <div id="count"></div>
   </body>
   <script type="text/javascript">
       function resize_tile(el){
@@ -48,8 +68,31 @@
         el.style.top    = (window.innerHeight/8);
         el.style.left   = (window.innerWidth/8);
       }
-      function process_text(el, content){
+      function process_text(el, num, content){
         // set font size according to length of the text
+        if(num==0){
+          help.style.fontFamily = "scratch";
+          help.style.textAlign = "center";
+          help.innerHTML="<center> Use arrow keys to navigate. ( <- and -> ) </center>";
+        }
+        else{
+          help.innerHTML ="";
+        }
+        count.style.fontFamily="scratch";
+        count.innerHTML = num + "/" + length;
+
+        var audio_1 = document.getElementById('song-1');
+        var audio_2 = document.getElementById('song-2');
+        audio_1.volume = 1;
+        audio_2.volume = 0;
+        audio_1.play();
+        audio_2.play();
+
+        setTimeout(function() {
+          audio_2.currentTime = audio_1.currentTime - 100;
+          audio_2.volume = 0.4;
+        }, 250);
+
         var num_words = content.split(' ').length;
 
         if(num_words <= 15){
@@ -66,6 +109,8 @@
       }
 
       var text = document.getElementById('text');
+      var help = document.getElementById('help');
+      var count = document.getElementById('count');
       resize_tile(text);
       var t=["<center> Hi.</center> ",
             "<center>Long time right?</center>",
@@ -169,12 +214,17 @@
             "To the only crush I have had. Adios. <center> <div id='image'><img src='assets/final.jpg'/></div></center>"
 
             ];
+      var length = t.length;
       var t_num=0;
-      document.addEventListener("keypress",function(e){
-          e = e || window.event;
-          if(e.keyCode == 32 && t_num< t.length){
-              process_text(text, t[t_num]);
+      process_text(text,0,t[0]);
+      document.addEventListener("keydown",function(e){
+          if(e.keyCode == 39){
               t_num++;
+              process_text(text, t_num, t[t_num]);
+          }
+          else if (e.keyCode == 37 && t_num>0){
+              t_num--;
+              process_text(text, t_num, t[t_num]);
           }
       }, false);
     </script>
